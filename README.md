@@ -2,7 +2,7 @@
 
 This is the working area for the IETF [CBOR Working Group](https://datatracker.ietf.org/wg/cbor/documents/) Internet-Draft, "Additional Control Operators for CDDL".
 
-* [Editor's Copy](https://cbor-wg.github.io/cddl-control/#go.draft-ietf-cbor-cddl-control.html)
+* [Editor's Copy](https://cbor-wg.github.io/cddl-control/#go.draft-ietf-cbor-cddl-control.html)  [![Build Status](https://travis-ci.org/cbor-wg/cddl-control.svg?branch=main)](https://travis-ci.org/cbor-wg/cddl-control)
 * [Working Group Draft](https://tools.ietf.org/html/draft-ietf-cbor-cddl-control)
 * [Compare Editor's Copy to Working Group Draft](https://cbor-wg.github.io/cddl-control/#go.draft-ietf-cbor-cddl-control.diff)
 
