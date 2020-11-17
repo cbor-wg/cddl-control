@@ -268,6 +268,23 @@ A tool that validates an instance against that specification may mark
 the instance as using a feature that is annotated by the
 specification.
 
+More specifically, the tool's diagnostic output might contain
+the controller (right hand side) as a feature name, and the target
+(left hand side) as a feature detail.  However, in some cases, the target has
+too much detail, and the specification might want to hint the tool
+that more limited detail is appropriate.  In this case, the controller
+should be an array, with the first element being the feature name
+(that would otherwise be the entire controller), and the second
+element being the detail (usually another string).
+
+~~~ CDDL
+foo = {
+  kind: bar / baz .feature (["foo-extensions", "bazify"])
+}
+bar = ...
+baz = ... ; complex stuff that doesn't all need to be in the detail
+~~~
+
 {{exa-feat-map}} shows what could be the definition of a person, with
 potential extensions beyond `name` and `organization` being marked
 `further-person-extension`.
@@ -276,7 +293,9 @@ collected into `$$person-extensions`.  However, future extensions
 would be deemed invalid unless the wildcard at the end of the map is
 added.
 These extensions could then be specifically examined by a user or a
-tool that makes use of the validation result.
+tool that makes use of the validation result; the label (map key)
+actually used makes a fine feature detail for the tool's diagnostic
+output.
 
 Leaving out the entire extension point would mean that instances that
 make use of an extension would be marked as whole-sale invalid, making
