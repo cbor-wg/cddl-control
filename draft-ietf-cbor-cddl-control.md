@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2020-11-17
+date: 2021-02-22
 
 stand_alone: true
 
@@ -31,6 +31,13 @@ normative:
   IANA.cddl: reg
   RFC5234: abnf
   RFC7405: abnf2
+informative:
+  CDDL-RS:
+    title: cddl-rs
+    author:
+      name: Andrew Weiss
+    target: https://github.com/anweiss/cddl
+
 
 --- abstract
 
@@ -206,7 +213,7 @@ There are several small issues, with solutions given here:
   The composition this calls for can be provided by the `.cat` operator.
 
 These points are combined into an example in {{exa-abnf}}, which uses
-ABNF from {{?RFC3339}} to specify the CBOR tags defined in {{?I-D.ietf-cbor-date-tag}}.
+ABNF from {{?RFC3339}} to specify one of the CBOR tags defined in {{?RFC8943}}.
 
 
 ~~~
@@ -367,9 +374,12 @@ Implementation Status
 <!-- RFC7942 -->
 
 An early implementation of the control operator `.feature` has been
-available in the CDDL tool since version 0.8.11.  The validator warns
-about each feature being used and provides the set of target values
-used with the feature.
+available in the CDDL tool described in {{Section F of RFC8610}} since version 0.8.11.
+The validator warns about each feature being used and provides the set
+of target values used with the feature.  `.cat` and `.plus` are also implemented.
+
+Andrew Weiss' {{CDDL-RS}} has an ongoing implementation of this draft
+which is feature-complete except for the ABNF support (<https://github.com/anweiss/cddl/pull/79>).
 
 Security considerations
 =======================
