@@ -45,7 +45,7 @@ The Concise Data Definition Language (CDDL), standardized in RFC 8610,
 provides "control operators" as its main language extension point.
 
 The present document defines a number of control operators that did
-not make it into RFC 8610: `.cat`/`.plus` for the construction of constants,
+not make it into RFC 8610: `.plus`, `.cat` and `.det` for the construction of constants,
 `.abnf`/`.abnfb` for including ABNF (RFC 5234/RFC 7405) in CDDL specifications, and
 `.feature` for indicating the use of a non-basic feature in an instance.
 
