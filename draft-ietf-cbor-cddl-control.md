@@ -88,6 +88,45 @@ operators: `.plus` for numeric addition, `.cat` for string
 concatenation, and `.det` for string concatenation with dedenting of
 the right hand side (controller).
 
+
+Numeric Addition
+----------------
+
+In many cases in a specification, numbers are needed relative to a
+base number.  The `.plus` control identifies a number that is
+constructed by adding the numeric values of the target and of the
+controller.
+
+Target and controller MUST be numeric.
+If the target is a floating point number and the controller an integer
+number, or vice versa, the sum is converted into the type of the
+target; converting from a floating point number to an integer selects
+its floor (the largest integer less than or equal to the floating
+point number).
+
+~~~~ cddl
+interval<BASE> = (
+  BASE => int             ; lower bound
+  (BASE .plus 1) => int   ; upper bound
+  ? (BASE .plus 2) => int ; tolerance
+)
+
+X = 0
+Y = 3
+rect = {
+  interval<X>
+  interval<Y>
+}
+~~~~
+{: #exa-plus title="Example: addition to a base value"}
+
+The example in {{exa-plus}} contains the generic definition of a group
+`interval` that gives a lower and an upper bound and optionally a
+tolerance.
+`rect` combines two of these groups into a map, one group for the X
+dimension and one for Y dimension.
+
+
 String Concatenation
 --------------------
 
@@ -163,44 +202,6 @@ as it is longer and may invoke unpleasant images.)
 
 If left-hand-side (target) dedenting is needed as well, this can be
 achieved with the slightly longer construct `("" .det lhs) .det rhs`.
-
-Numeric Addition
-----------------
-
-In many cases in a specification, numbers are needed relative to a
-base number.  The `.plus` control identifies a number that is
-constructed by adding the numeric values of the target and of the
-controller.
-
-Target and controller MUST be numeric.
-If the target is a floating point number and the controller an integer
-number, or vice versa, the sum is converted into the type of the
-target; converting from a floating point number to an integer selects
-its floor (the largest integer less than or equal to the floating
-point number).
-
-~~~~ cddl
-interval<BASE> = (
-  BASE => int             ; lower bound
-  (BASE .plus 1) => int   ; upper bound
-  ? (BASE .plus 2) => int ; tolerance
-)
-
-X = 0
-Y = 3
-rect = {
-  interval<X>
-  interval<Y>
-}
-~~~~
-{: #exa-plus title="Example: addition to a base value"}
-
-The example in {{exa-plus}} contains the generic definition of a group
-`interval` that gives a lower and an upper bound and optionally a
-tolerance.
-`rect` combines two of these groups into a map, one group for the X
-dimension and one for Y dimension.
-
 
 Embedded ABNF
 =============
