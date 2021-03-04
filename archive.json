@@ -1,0 +1,162 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2021-01-17T01:32:50.097027+00:00",
+  "repo": "cbor-wg/cddl-control",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 2,
+      "id": "MDU6SXNzdWU3NDUxMjE2NDc=",
+      "title": "Type choice semantics for targets and controllers",
+      "url": "https://github.com/cbor-wg/cddl-control/issues/2",
+      "state": "OPEN",
+      "author": "anweiss",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "For some control operators, there are implied semantics on targets and controllers. For example, with `.cat`, both the target and controller MUST be strings. However, in the event that the target and/or controller are parenthesized types with multiple type choices between strings or bareword identifiers that resolve to type choices between strings, it isn't clear whether a validation implementation should attempt to concatenate each of the type choices, or if type choices should be disallowed altogether when used with control operators.\r\n\r\nSo for example, should:\r\n\r\n```cddl\r\na = ( \"foo\" / \"foo \" ) .cat b\r\nb = \"bar\" / \"baz\"\r\n``` \r\n\r\nbe valid against any of the JSON strings`\"foobar\"`, `\"foobaz\"`, `\"foo bar\"` and `\"foo baz\"`? Or should this use of a type choice with a control operator be disallowed altogether due to potential overcomplexity on the part of the CDDL author?\r\n",
+      "createdAt": "2020-11-17T22:04:12Z",
+      "updatedAt": "2020-11-19T15:53:56Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "core-bot",
+          "authorAssociation": "NONE",
+          "body": "On 2020-11-17, at 23:04, anweiss <notifications@github.com> wrote:\n> \n> \n> For some control operators, there are implied semantics on targets and controllers. For example, with .cat, both the target and controller MUST be strings. However, in the event that the target and/or controller are parenthesized types with multiple type choices between strings or bareword identifiers that resolve to type choices between strings, it isn't clear whether a validation implementation should attempt to concatenate each of the type choices, or if type choices should be disallowed altogether when used with control operators.\n> \n> So for example, should:\n> \n> a = ( \"foo\" / \"foo \" ) .cat b\n> b = \"bar\" / \"baz\"\n> \n> be valid against any of the JSON strings\"foobar\", \"foobaz\", \n\nYes, yes.\n\n> \"foo bar\" and \"foo baz\u201d?\n\nNo, no.\n\n> Or should this use of a type choice with a control operator be disallowed altogether due to potential overcomplexity on the part of the CDDL author?\n\nI think we should not build mechanism to enforce some (a little dubious) policy.\nThe meaning of .cat as the set of values resulting from application of concatenation to the cross-product of its two input types is clear.  \nI can easily imagine cases where that is useful:\n\nOption = \u201cstaple\u201d / \u201cfold\u201d / \u201cemboss\u201d / \u201ccrumple\u201d / \u201cburn\u201d\nSwitch = Option / \u201cno-\u201d .cat Option\n\nNow, implementing that may be considered too hard for a tool implementer, and I must admit that the implementation I did tonight is focused on singletons (it can generate examples for, but not yet validate the above) \u2014 I sure will fix this if I get a bug report from someone who actually uses this case.\n\nGr\u00fc\u00dfe, Carsten\n\n",
+          "createdAt": "2020-11-17T22:31:16Z",
+          "updatedAt": "2020-11-17T22:31:16Z"
+        },
+        {
+          "author": "anweiss",
+          "authorAssociation": "NONE",
+          "body": "Thanks for the clarity here @cabo. This is helpful.",
+          "createdAt": "2020-11-19T15:53:56Z",
+          "updatedAt": "2020-11-19T15:53:56Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "MDU6SXNzdWU3NjA3MDYzNDM=",
+      "title": "Numeric addition with JSON keys",
+      "url": "https://github.com/cbor-wg/cddl-control/issues/3",
+      "state": "OPEN",
+      "author": "anweiss",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In the numeric addition example:\r\n\r\n```cddl\r\ninterval<BASE> = (\r\n  BASE => int             ; lower bound\r\n  (BASE .plus 1) => int   ; upper bound\r\n  ? (BASE .plus 2) => int ; tolerance\r\n)\r\n\r\nrect = {\r\n  interval<X>\r\n  interval<Y>\r\n}\r\nX = 0\r\nY = 3\r\n\r\n```\r\n\r\nthe computed member keys in the struct become unsigned integers. If one wants to use this when validating a JSON object, the validation should presumably fail because JSON doesn't allow keys that aren't strings. With that being said, it may still be useful to use the string equivalent of a computed member key from numeric addition when validating a JSON key.\r\n\r\nFor example, it may be useful to use the CDDL above to validate:\r\n\r\n```json\r\n{\r\n  \"0\": 10,\r\n  \"1\": 10,\r\n  \"3\": 10,\r\n  \"4\": 10,\r\n  \"5\": 10\r\n}\r\n```\r\n\r\nbut there exists no way in CDDL to denote that the string representation of a numeric value should be used instead. A tool could certainly allow for that (e.g. via some sort of `--allow-member-keys-as-strings` flag), but then there are all sorts of implied semantics for the string representations of those numbers, byte strings, etc.\r\n\r\nSo, at the end of the day, there should be a bit more info regarding the use of these control operators with JSON.",
+      "createdAt": "2020-12-09T22:04:18Z",
+      "updatedAt": "2020-12-11T20:24:55Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "anweiss",
+          "authorAssociation": "NONE",
+          "body": "Also, unless I'm reading the example wrong:\r\n\r\n```cddl\r\nrect = {\r\n  interval<X>\r\n  interval<Y>\r\n}\r\n```\r\n\r\nmight result in ambiguity if the value inserted for the `Y` generic parameter overlaps with any of the values computed from `X`, no? I guess that's on the CDDL author to avoid.",
+          "createdAt": "2020-12-09T22:20:51Z",
+          "updatedAt": "2020-12-09T22:20:51Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Probably not much ambiguity (prioritized choice takes that away), but dead code.\r\n\r\nOn your point about using text strings to represent integers: there is an infinite amount of conversions and other operations that might be needed in a spec.  Also, we probably need some expression capability to get assertions, co-occurrence constraints etc. into the language.  So I think it will be worthwhile to collect a set of use cases (preferably not just synthetic ones) and start a design based on those.\r\n\r\n(Some form of assertions also could help find consistency errors within a spec, like choosing X and Y so the intervals overlap.)\r\n\r\n\u00bbExperience also indicates that simplified or specialized extension languages\r\noften have more features added and grow until they resemble a full programming\r\nlanguage.\u00ab  https://www.usenix.org/legacy/publications/compsystems/1994/fall_laumann.pdf#page=3",
+          "createdAt": "2020-12-09T22:29:38Z",
+          "updatedAt": "2020-12-09T22:29:38Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "MDU6SXNzdWU3ODcxNDQ2NDk=",
+      "title": "Array \"subtraction\" operator(s)?",
+      "url": "https://github.com/cbor-wg/cddl-control/issues/4",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Over in https://github.com/cbor-wg/cbor-oid/issues/3, we had a proposal to be able to do\r\n\r\n```\r\nroot-sha2 = bytes .sdnvseq [ 60 840 1 101 3 4 2 ]\r\nroot-sha256 = byte .sdnvseq [ 60 840 1 101 3 4 2 1 ]\r\nrel-sha25 = root-sha256 .oidrel root-sha2\r\n```\r\n\r\n(Note that the inverse (array concatenation) can already be done via unwrap and groups:\r\n\r\n```\r\nc = [~a, ~b]\r\na = [1, 2, 3]\r\nb = [4, 5, 6]\r\n```\r\n\u2794 [1, 2, 3, 4, 5, 6])\r\n",
+      "createdAt": "2021-01-15T19:33:45Z",
+      "updatedAt": "2021-01-15T19:33:45Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTIwOTEyMTg3",
+      "title": "allow reducing .feature verbosity",
+      "url": "https://github.com/cbor-wg/cddl-control/pull/1",
+      "state": "MERGED",
+      "author": "cabo",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "(also in cddl tool 0.8.13)",
+      "createdAt": "2020-11-14T00:15:50Z",
+      "updatedAt": "2020-11-17T17:16:47Z",
+      "baseRepository": "cbor-wg/cddl-control",
+      "baseRefName": "main",
+      "baseRefOid": "efab8083f8a00ac0e62603127beac40846ce73b2",
+      "headRepository": "cbor-wg/cddl-control",
+      "headRefName": "feature-verbosity",
+      "headRefOid": "c5e33e73086d22e3ab2e3f05d664ccb21d05b2bd",
+      "closedAt": "2020-11-17T17:16:47Z",
+      "mergedAt": "2020-11-17T17:16:47Z",
+      "mergedBy": "cabo",
+      "mergeCommit": {
+        "oid": "9bc63d44f3d746489508c6e6df8d6a61582cb711"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
