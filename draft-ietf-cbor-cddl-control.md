@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-02-22
+date: 2021-03-04
 
 stand_alone: true
 
@@ -45,7 +45,7 @@ The Concise Data Definition Language (CDDL), standardized in RFC 8610,
 provides "control operators" as its main language extension point.
 
 The present document defines a number of control operators that did
-not make it into RFC 8610: `.cat`/`.plus` for the construction of constants,
+not make it into RFC 8610: `.plus`, `.cat` and `.det` for the construction of constants,
 `.abnf`/`.abnfb` for including ABNF (RFC 5234/RFC 7405) in CDDL specifications, and
 `.feature` for indicating the use of a non-basic feature in an instance.
 
@@ -62,8 +62,9 @@ The present document defines a number of control operators that did
 not make it into RFC 8610:
 
 | Name     | Purpose                                   |
-| .cat     | String Concatenation                      |
 | .plus    | Numeric addition                          |
+| .cat     | String Concatenation                      |
+| .det     | String Concatenation, dedenting rhs       |
 | .abnf    | ABNF in CDDL (text strings)               |
 | .abnfb   | ABNF in CDDL (byte strings)               |
 | .feature | Detecting feature use in extension points |
@@ -82,45 +83,11 @@ Computed Literals
 =================
 
 CDDL as defined in {{-cddl}} does not have any mechanisms to compute
-literals.  As an 80 % solution, this specification adds two control
-operators: `.cat` for string concatenation, and `.plus` for numeric
-addition.
+literals.  As an 80 % solution, this specification adds three control
+operators: `.plus` for numeric addition, `.cat` for string
+concatenation, and `.det` for string concatenation with dedenting of
+the right hand side (controller).
 
-String Concatenation
---------------------
-
-It is often useful to be able to compose string literals out of
-component literals defined in different places in the specification.
-
-The `.cat` control identifies a string that is built from a
-concatenation of the target and the controller.
-As targets and controllers are types, the resulting type is formally
-the cross-product of the two types, although not all tools may be able
-to work with non-unique targets or controllers.
-
-Target and controller MUST be strings.
-The result of the operation has the type of the target.
-The concatenation is performed on the bytes in both strings.
-If the target is a text string, the result of that concatenation MUST
-be valid UTF-8.
-
-~~~~ cddl
-a = "foo" .cat '
-  bar
-  baz
-'
-; on a system where the newline is \n, is the same string as:
-b = "foo\n  bar\n  baz\n"
-~~~~
-{: #exa-cat title="Example: concatenation of text and byte string"}
-
-The example in {{exa-cat}}
-builds a text string named `a` out of concatenating the target text string `"foo"`
-and the controller byte string entered in a text form byte string literal.
-(This particular idiom is useful when the text string contains
-newlines, which, as shown in the example for `b`, may be harder to
-read when entered in the format that the pure CDDL text string
-notation inherits from JSON.)
 
 Numeric Addition
 ----------------
@@ -159,6 +126,82 @@ tolerance.
 `rect` combines two of these groups into a map, one group for the X
 dimension and one for Y dimension.
 
+
+String Concatenation
+--------------------
+
+It is often useful to be able to compose string literals out of
+component literals defined in different places in the specification.
+
+The `.cat` control identifies a string that is built from a
+concatenation of the target and the controller.
+As targets and controllers are types, the resulting type is formally
+the cross-product of the two types, although not all tools may be able
+to work with non-unique targets or controllers.
+
+Target and controller MUST be strings.
+The result of the operation has the type of the target.
+The concatenation is performed on the bytes in both strings.
+If the target is a text string, the result of that concatenation MUST
+be valid UTF-8.
+
+~~~~ cddl
+a = "foo" .cat '
+  bar
+  baz
+'
+; on a system where the newline is \n, is the same string as:
+b = "foo\n  bar\n  baz\n"
+~~~~
+{: #exa-cat title="Example: concatenation of text and byte string"}
+
+The example in {{exa-cat}}
+builds a text string named `a` out of concatenating the target text string `"foo"`
+and the controller byte string entered in a text form byte string literal.
+(This particular idiom is useful when the text string contains
+newlines, which, as shown in the example for `b`, may be harder to
+read when entered in the format that the pure CDDL text string
+notation inherits from JSON.)
+
+String Concatenation with Dedenting
+-----------------------------------
+
+Multi-line string literals for various applications, including
+embedded ABNF ({{embedded-abnf}}), need to be set flush left, at least
+partially.
+Often, having some indentation in the source code for the literal can
+promote readability, as in {{exa-det}}.
+
+~~~~ cddl
+oid = bytes .abnfb ("oid" .det cbor-tags-oid)
+roid = bytes .abnfb ("roid" .det cbor-tags-oid)
+
+cbor-tags-oid = '
+  oid = 1*arc
+  roid = *arc
+  arc = [nlsb] %x00-7f
+  nlsb = %x81-ff *%x80-ff
+'
+~~~~
+{: #exa-det title="Example: dedenting concatenation"}
+
+The control operator `.det` works like `.cat`, except that the right
+hand side (controller) is *dedented* first.  For the purposes of this
+specification, we define dedenting as:
+
+1. determining the smallest amount of left-most white space (number of
+   leading space characters) in all the non-blank lines, and
+2. removing exactly that number of leading space characters from each
+   line.  For blank (white space only or empty) lines, there may be
+   less (or no) leading space characters than this amount, in which
+   case all leading space is removed.
+
+(The name `.det` is a shortcut for "dedenting cat".
+The maybe more obvious name `.dedcat` has not been chosen
+as it is longer and may invoke unpleasant images.)
+
+If left-hand-side (target) dedenting is needed as well, this can be
+achieved with the slightly longer construct `("" .det lhs) .det rhs`.
 
 Embedded ABNF
 =============
@@ -222,11 +265,11 @@ Tag1004 = #6.1004(text .abnf full-date)
 ; for RFC 7049
 Tag0 = #6.0(text .abnf date-time)
 
-full-date = "full-date" .cat rfc3339
-date-time = "date-time" .cat rfc3339
+full-date = "full-date" .det rfc3339
+date-time = "date-time" .det rfc3339
 
 ; Note the trick of idiomatically starting with a newline, separating
-;   off the element in the .cat from the rule-list
+;   off the element in the concatenations above from the rule-list
 rfc3339 = '
    date-fullyear   = 4DIGIT
    date-month      = 2DIGIT  ; 01-12
@@ -249,10 +292,9 @@ rfc3339 = '
 ' .cat rfc5234-core
 
 rfc5234-core = '
-         DIGIT          =  %x30-39 ; 0-9
-; abbreviated here
+   DIGIT          =  %x30-39 ; 0-9
+   ; abbreviated here
 '
-
 ~~~
 {: #exa-abnf title="Example: employing RFC 3339 ABNF for defining CBOR Tags"}
 
@@ -361,8 +403,9 @@ This document requests IANA to register the contents of
 {{tbl-iana-reqs}} into the CDDL Control Operators registry {{-reg}}:
 
 | Name     | Reference |
-| .cat     | [RFCthis] |
 | .plus    | [RFCthis] |
+| .cat     | [RFCthis] |
+| .det     | [RFCthis] |
 | .abnf    | [RFCthis] |
 | .abnfb   | [RFCthis] |
 | .feature | [RFCthis] |
@@ -376,10 +419,12 @@ Implementation Status
 An early implementation of the control operator `.feature` has been
 available in the CDDL tool described in {{Section F of RFC8610}} since version 0.8.11.
 The validator warns about each feature being used and provides the set
-of target values used with the feature.  `.cat` and `.plus` are also implemented.
+of target values used with the feature.
+The other control operators defined in this specification are also
+implemented as of version 0.8.21.
 
 Andrew Weiss' {{CDDL-RS}} has an ongoing implementation of this draft
-which is feature-complete except for the ABNF support (<https://github.com/anweiss/cddl/pull/79>).
+which is feature-complete except for the ABNF and dedenting support (<https://github.com/anweiss/cddl/pull/79>).
 
 Security considerations
 =======================
@@ -394,3 +439,7 @@ Acknowledgements
 
 Jim Schaad suggested several improvements.
 The `.feature` feature was developed out of a discussion with Henk Birkholz.
+Paul Kyzivat helped isolate the need for `.det`.
+
+<!--  LocalWords:  dedenting dedented
+ -->
