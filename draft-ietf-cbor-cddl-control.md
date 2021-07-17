@@ -426,7 +426,7 @@ available in the CDDL tool described in {{Section F of RFC8610}} since version 0
 The validator warns about each feature being used and provides the set
 of target values used with the feature.
 The other control operators defined in this specification are also
-implemented as of version 0.8.21.
+implemented as of version 0.8.21 and 0.8.26 (double-handed `.det`).
 
 Andrew Weiss' {{CDDL-RS}} has an ongoing implementation of this draft
 which is feature-complete except for the ABNF and dedenting support (<https://github.com/anweiss/cddl/pull/79>).
