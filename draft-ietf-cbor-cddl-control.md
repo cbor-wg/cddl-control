@@ -64,7 +64,7 @@ not make it into RFC 8610:
 | Name     | Purpose                                   |
 | .plus    | Numeric addition                          |
 | .cat     | String Concatenation                      |
-| .det     | String Concatenation, dedenting rhs       |
+| .det     | String Concatenation, pre-dedenting       |
 | .abnf    | ABNF in CDDL (text strings)               |
 | .abnfb   | ABNF in CDDL (byte strings)               |
 | .feature | Detecting feature use in extension points |
@@ -185,9 +185,10 @@ cbor-tags-oid = '
 ~~~~
 {: #exa-det title="Example: dedenting concatenation"}
 
-The control operator `.det` works like `.cat`, except that the right
-hand side (controller) is *dedented* first.  For the purposes of this
-specification, we define dedenting as:
+The control operator `.det` works like `.cat`, except that both
+arguments (target and controller) are independently *dedented* before
+the concatenation takes place.
+For the purposes of this specification, we define dedenting as:
 
 1. determining the smallest amount of left-most white space (number of
    leading space characters) in all the non-blank lines, and
@@ -200,8 +201,11 @@ specification, we define dedenting as:
 The maybe more obvious name `.dedcat` has not been chosen
 as it is longer and may invoke unpleasant images.)
 
-If left-hand-side (target) dedenting is needed as well, this can be
-achieved with the slightly longer construct `("" .det lhs) .det rhs`.
+Occasionally, dedenting of only a single item is needed.
+This can be achieved by using this operator with an empty string,
+e.g., `"" .det rhs` or `lhs .det ""`, which can in turn be combined
+with a `.cat`: in the construct `lhs .cat ("" .det rhs)`, only `rhs`
+is dedented.
 
 Embedded ABNF
 =============
