@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-03-04
+date: 2021-07-17
 
 stand_alone: true
 
@@ -253,20 +253,20 @@ There are several small issues, with solutions given here:
   (Note that all rules referenced need to be defined in each ABNF
   operator controller string —
   there is no implicit import of {{RFC5234}} Core ABNF or other rules.)
-  The composition this calls for can be provided by the `.cat` operator.
+  The composition this calls for can be provided by the `.cat`
+  operator, and/or by `.det` if there is indentation to be disposed of.
 
 These points are combined into an example in {{exa-abnf}}, which uses
 ABNF from {{?RFC3339}} to specify one of the CBOR tags defined in {{?RFC8943}}.
 
-
 ~~~
-; for draft-ietf-cbor-date-tag
+; for RFC 8943
 Tag1004 = #6.1004(text .abnf full-date)
-; for RFC 7049
+; for RFC 8949
 Tag0 = #6.0(text .abnf date-time)
 
-full-date = "full-date" .det rfc3339
-date-time = "date-time" .det rfc3339
+full-date = "full-date" .cat rfc3339
+date-time = "date-time" .cat rfc3339
 
 ; Note the trick of idiomatically starting with a newline, separating
 ;   off the element in the concatenations above from the rule-list
@@ -289,7 +289,7 @@ rfc3339 = '
    full-time       = partial-time time-offset
 
    date-time       = full-date "T" full-time
-' .cat rfc5234-core
+' .det rfc5234-core
 
 rfc5234-core = '
    DIGIT          =  %x30-39 ; 0-9
@@ -413,6 +413,7 @@ This document requests IANA to register the contents of
 
 Implementation Status
 =====================
+{: removeinrfc="true"}
 
 <!-- RFC7942 -->
 
@@ -440,6 +441,9 @@ Acknowledgements
 Jim Schaad suggested several improvements.
 The `.feature` feature was developed out of a discussion with Henk Birkholz.
 Paul Kyzivat helped isolate the need for `.det`.
+
+.det is an abbreviation for "dedenting cat", but Det is also the name
+of a German TV Cartoon character created in the 1960s.
 
 <!--  LocalWords:  dedenting dedented
  -->
