@@ -55,7 +55,7 @@ not make it into RFC 8610: `.plus`, `.cat` and `.det` for the construction of co
 Introduction        {#intro}
 ============
 
-The Concise Data Definition Language (CDDL), standardized in RFC 8610,
+The Concise Data Definition Language (CDDL), standardized in {{-cddl}},
 provides "control operators" as its main language extension point.
 
 The present document defines a number of control operators that did
