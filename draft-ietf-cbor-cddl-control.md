@@ -55,7 +55,7 @@ not make it into RFC 8610: `.plus`, `.cat` and `.det` for the construction of co
 Introduction        {#intro}
 ============
 
-The Concise Data Definition Language (CDDL), standardized in RFC 8610,
+The Concise Data Definition Language (CDDL), standardized in {{-cddl}},
 provides "control operators" as its main language extension point.
 
 The present document defines a number of control operators that did
@@ -86,7 +86,7 @@ CDDL as defined in {{-cddl}} does not have any mechanisms to compute
 literals.  As an 80 % solution, this specification adds three control
 operators: `.plus` for numeric addition, `.cat` for string
 concatenation, and `.det` for string concatenation with dedenting of
-the right hand side (controller).
+both sides (target and controller).
 
 For these operators, as with all control operators, targets and
 controllers are types.  The resulting type is therefore formally a
