@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-07-17
+date: 2021-07-31
 
 stand_alone: true
 
@@ -28,7 +28,7 @@ author:
 
 normative:
   RFC8610: cddl
-  IANA.cddl: reg
+  IANA.cddl:
   RFC5234: abnf
   RFC7405: abnf2
 informative:
@@ -88,6 +88,12 @@ operators: `.plus` for numeric addition, `.cat` for string
 concatenation, and `.det` for string concatenation with dedenting of
 the right hand side (controller).
 
+For these operators, as with all control operators, targets and
+controllers are types.  The resulting type is therefore formally a
+function of the elements of the cross-product of the two types.
+Not all tools may be able to work with non-unique targets or
+controllers.
+
 
 Numeric Addition
 ----------------
@@ -135,10 +141,6 @@ component literals defined in different places in the specification.
 
 The `.cat` control identifies a string that is built from a
 concatenation of the target and the controller.
-As targets and controllers are types, the resulting type is formally
-the cross-product of the two types, although not all tools may be able
-to work with non-unique targets or controllers.
-
 Target and controller MUST be strings.
 The result of the operation has the type of the target.
 The concatenation is performed on the bytes in both strings.
@@ -250,7 +252,9 @@ There are several small issues, with solutions given here:
   expressed in ABNF!) is relaxed to allow a single linefeed as a
   newline:
 
-       CRLF = %x0A / %x0D.0A
+~~~ abnf
+   CRLF = %x0A / %x0D.0A
+~~~
 
 * One set of rules provided in an ABNF specification is often used in
   multiple positions, in particular staples such as DIGIT and ALPHA.
@@ -261,7 +265,8 @@ There are several small issues, with solutions given here:
   operator, and/or by `.det` if there is indentation to be disposed of.
 
 These points are combined into an example in {{exa-abnf}}, which uses
-ABNF from {{?RFC3339}} to specify one of the CBOR tags defined in {{?RFC8943}}.
+ABNF from {{?RFC3339}} to specify one each of the CBOR tags defined in
+{{?RFC8943}} and {{?RFC8949}}.
 
 ~~~
 ; for RFC 8943
@@ -328,15 +333,17 @@ too much detail, and the specification might want to hint the tool
 that more limited detail is appropriate.  In this case, the controller
 should be an array, with the first element being the feature name
 (that would otherwise be the entire controller), and the second
-element being the detail (usually another string).
+element being the detail (usually another string), as illustrated in
+{{exa-feat-array}}.
 
-~~~ CDDL
+~~~ cddl
 foo = {
   kind: bar / baz .feature (["foo-extensions", "bazify"])
 }
 bar = ...
 baz = ... ; complex stuff that doesn't all need to be in the detail
 ~~~
+{: #exa-feat-array title="Providing explicit detail with .feature"}
 
 {{exa-feat-map}} shows what could be the definition of a person, with
 potential extensions beyond `name` and `organization` being marked
@@ -357,7 +364,7 @@ Leaving the extension point in, but not marking its use as special,
 would render mistakes such as using the label `organisation` instead of
 `organization` invisible.
 
-~~~ CDDL
+~~~ cddl
 person = {
   ? name: text
   ? organization: text
@@ -372,7 +379,7 @@ $$person-extensions //= (? bloodgroup: text)
 {{exa-feat-type}} shows another example where `.feature` provides for
 type extensibility.
 
-~~~
+~~~ cddl
 allowed-types = number / text / bool / null
               / [* number] / [* text] / [* bool]
               / (any .feature "allowed-type-extension")
@@ -384,9 +391,10 @@ control then only provides information to the process requesting the
 validation.
 One could also imagine a tool that takes arguments allowing the tool to accept
 certain features and reject others (enable/disable).  The latter approach
-could for instance be used for a JSON/CBOR switch:
+could for instance be used for a JSON/CBOR switch, as illustrated in
+{{exa-feat-variants}}.
 
-~~~ CDDL
+~~~ cddl
 SenML-Record = {
 ; ...
   ? v => number
@@ -395,6 +403,7 @@ SenML-Record = {
 v = JC<"v", 2>
 JC<J,C> = J .feature "json" / C .feature "cbor"
 ~~~
+{: #exa-feat-variants title="Describing variants with .feature"}
 
 It remains to be seen if the enable/disable approach can lead to new
 idioms of using CDDL.  The language currently has no way to enforce
@@ -404,7 +413,8 @@ IANA Considerations
 ==================
 
 This document requests IANA to register the contents of
-{{tbl-iana-reqs}} into the CDDL Control Operators registry {{-reg}}:
+{{tbl-iana-reqs}} into the registry
+"{{cddl-control-operators (CDDL Control Operators)<IANA.cddl}}" of {{IANA.cddl}}:
 
 | Name     | Reference |
 | .plus    | [RFCthis] |
@@ -413,7 +423,7 @@ This document requests IANA to register the contents of
 | .abnf    | [RFCthis] |
 | .abnfb   | [RFCthis] |
 | .feature | [RFCthis] |
-{: #tbl-iana-reqs title=="New control operators to be registered"}
+{: #tbl-iana-reqs title="New control operators to be registered"}
 
 Implementation Status
 =====================
