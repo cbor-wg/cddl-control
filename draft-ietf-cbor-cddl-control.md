@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-03-04
+date: 2021-07-31
 
 stand_alone: true
 
@@ -28,7 +28,7 @@ author:
 
 normative:
   RFC8610: cddl
-  IANA.cddl: reg
+  IANA.cddl:
   RFC5234: abnf
   RFC7405: abnf2
 informative:
@@ -55,7 +55,7 @@ not make it into RFC 8610: `.plus`, `.cat` and `.det` for the construction of co
 Introduction        {#intro}
 ============
 
-The Concise Data Definition Language (CDDL), standardized in RFC 8610,
+The Concise Data Definition Language (CDDL), standardized in {{-cddl}},
 provides "control operators" as its main language extension point.
 
 The present document defines a number of control operators that did
@@ -64,7 +64,7 @@ not make it into RFC 8610:
 | Name     | Purpose                                   |
 | .plus    | Numeric addition                          |
 | .cat     | String Concatenation                      |
-| .det     | String Concatenation, dedenting rhs       |
+| .det     | String Concatenation, pre-dedenting       |
 | .abnf    | ABNF in CDDL (text strings)               |
 | .abnfb   | ABNF in CDDL (byte strings)               |
 | .feature | Detecting feature use in extension points |
@@ -86,7 +86,13 @@ CDDL as defined in {{-cddl}} does not have any mechanisms to compute
 literals.  As an 80 % solution, this specification adds three control
 operators: `.plus` for numeric addition, `.cat` for string
 concatenation, and `.det` for string concatenation with dedenting of
-the right hand side (controller).
+both sides (target and controller).
+
+For these operators, as with all control operators, targets and
+controllers are types.  The resulting type is therefore formally a
+function of the elements of the cross-product of the two types.
+Not all tools may be able to work with non-unique targets or
+controllers.
 
 
 Numeric Addition
@@ -135,10 +141,6 @@ component literals defined in different places in the specification.
 
 The `.cat` control identifies a string that is built from a
 concatenation of the target and the controller.
-As targets and controllers are types, the resulting type is formally
-the cross-product of the two types, although not all tools may be able
-to work with non-unique targets or controllers.
-
 Target and controller MUST be strings.
 The result of the operation has the type of the target.
 The concatenation is performed on the bytes in both strings.
@@ -185,14 +187,15 @@ cbor-tags-oid = '
 ~~~~
 {: #exa-det title="Example: dedenting concatenation"}
 
-The control operator `.det` works like `.cat`, except that the right
-hand side (controller) is *dedented* first.  For the purposes of this
-specification, we define dedenting as:
+The control operator `.det` works like `.cat`, except that both
+arguments (target and controller) are independently *dedented* before
+the concatenation takes place.
+For the purposes of this specification, we define dedenting as:
 
-1. determining the smallest amount of left-most white space (number of
+1. determining the smallest amount of left-most blank space (number of
    leading space characters) in all the non-blank lines, and
 2. removing exactly that number of leading space characters from each
-   line.  For blank (white space only or empty) lines, there may be
+   line.  For blank (blank space only or empty) lines, there may be
    less (or no) leading space characters than this amount, in which
    case all leading space is removed.
 
@@ -200,8 +203,11 @@ specification, we define dedenting as:
 The maybe more obvious name `.dedcat` has not been chosen
 as it is longer and may invoke unpleasant images.)
 
-If left-hand-side (target) dedenting is needed as well, this can be
-achieved with the slightly longer construct `("" .det lhs) .det rhs`.
+Occasionally, dedenting of only a single item is needed.
+This can be achieved by using this operator with an empty string,
+e.g., `"" .det rhs` or `lhs .det ""`, which can in turn be combined
+with a `.cat`: in the construct `lhs .cat ("" .det rhs)`, only `rhs`
+is dedented.
 
 Embedded ABNF
 =============
@@ -246,27 +252,30 @@ There are several small issues, with solutions given here:
   expressed in ABNF!) is relaxed to allow a single linefeed as a
   newline:
 
-       CRLF = %x0A / %x0D.0A
+~~~ abnf
+   CRLF = %x0A / %x0D.0A
+~~~
 
 * One set of rules provided in an ABNF specification is often used in
   multiple positions, in particular staples such as DIGIT and ALPHA.
   (Note that all rules referenced need to be defined in each ABNF
   operator controller string —
   there is no implicit import of {{RFC5234}} Core ABNF or other rules.)
-  The composition this calls for can be provided by the `.cat` operator.
+  The composition this calls for can be provided by the `.cat`
+  operator, and/or by `.det` if there is indentation to be disposed of.
 
 These points are combined into an example in {{exa-abnf}}, which uses
-ABNF from {{?RFC3339}} to specify one of the CBOR tags defined in {{?RFC8943}}.
-
+ABNF from {{?RFC3339}} to specify one each of the CBOR tags defined in
+{{?RFC8943}} and {{?RFC8949}}.
 
 ~~~
-; for draft-ietf-cbor-date-tag
+; for RFC 8943
 Tag1004 = #6.1004(text .abnf full-date)
-; for RFC 7049
+; for RFC 8949
 Tag0 = #6.0(text .abnf date-time)
 
-full-date = "full-date" .det rfc3339
-date-time = "date-time" .det rfc3339
+full-date = "full-date" .cat rfc3339
+date-time = "date-time" .cat rfc3339
 
 ; Note the trick of idiomatically starting with a newline, separating
 ;   off the element in the concatenations above from the rule-list
@@ -289,7 +298,7 @@ rfc3339 = '
    full-time       = partial-time time-offset
 
    date-time       = full-date "T" full-time
-' .cat rfc5234-core
+' .det rfc5234-core
 
 rfc5234-core = '
    DIGIT          =  %x30-39 ; 0-9
@@ -301,8 +310,8 @@ rfc5234-core = '
 Features
 ========
 
-Traditionally, the kind of validation enabled by languages such as
-CDDL provided a Boolean result: valid, or invalid.
+Commonly, the kind of validation enabled by languages such as
+CDDL provides a Boolean result: valid, or invalid.
 
 In rapidly evolving environments, this is too simplistic.  The data
 models described by a CDDL specification may continually be enhanced
@@ -324,15 +333,17 @@ too much detail, and the specification might want to hint the tool
 that more limited detail is appropriate.  In this case, the controller
 should be an array, with the first element being the feature name
 (that would otherwise be the entire controller), and the second
-element being the detail (usually another string).
+element being the detail (usually another string), as illustrated in
+{{exa-feat-array}}.
 
-~~~ CDDL
+~~~ cddl
 foo = {
   kind: bar / baz .feature (["foo-extensions", "bazify"])
 }
 bar = ...
 baz = ... ; complex stuff that doesn't all need to be in the detail
 ~~~
+{: #exa-feat-array title="Providing explicit detail with .feature"}
 
 {{exa-feat-map}} shows what could be the definition of a person, with
 potential extensions beyond `name` and `organization` being marked
@@ -353,7 +364,7 @@ Leaving the extension point in, but not marking its use as special,
 would render mistakes such as using the label `organisation` instead of
 `organization` invisible.
 
-~~~ CDDL
+~~~ cddl
 person = {
   ? name: text
   ? organization: text
@@ -368,7 +379,7 @@ $$person-extensions //= (? bloodgroup: text)
 {{exa-feat-type}} shows another example where `.feature` provides for
 type extensibility.
 
-~~~
+~~~ cddl
 allowed-types = number / text / bool / null
               / [* number] / [* text] / [* bool]
               / (any .feature "allowed-type-extension")
@@ -380,9 +391,10 @@ control then only provides information to the process requesting the
 validation.
 One could also imagine a tool that takes arguments allowing the tool to accept
 certain features and reject others (enable/disable).  The latter approach
-could for instance be used for a JSON/CBOR switch:
+could for instance be used for a JSON/CBOR switch, as illustrated in
+{{exa-feat-variants}}.
 
-~~~ CDDL
+~~~ cddl
 SenML-Record = {
 ; ...
   ? v => number
@@ -391,6 +403,7 @@ SenML-Record = {
 v = JC<"v", 2>
 JC<J,C> = J .feature "json" / C .feature "cbor"
 ~~~
+{: #exa-feat-variants title="Describing variants with .feature"}
 
 It remains to be seen if the enable/disable approach can lead to new
 idioms of using CDDL.  The language currently has no way to enforce
@@ -400,7 +413,8 @@ IANA Considerations
 ==================
 
 This document requests IANA to register the contents of
-{{tbl-iana-reqs}} into the CDDL Control Operators registry {{-reg}}:
+{{tbl-iana-reqs}} into the registry
+"{{cddl-control-operators (CDDL Control Operators)<IANA.cddl}}" of {{IANA.cddl}}:
 
 | Name     | Reference |
 | .plus    | [RFCthis] |
@@ -409,10 +423,11 @@ This document requests IANA to register the contents of
 | .abnf    | [RFCthis] |
 | .abnfb   | [RFCthis] |
 | .feature | [RFCthis] |
-{: #tbl-iana-reqs title=="New control operators to be registered"}
+{: #tbl-iana-reqs title="New control operators to be registered"}
 
 Implementation Status
 =====================
+{: removeinrfc="true"}
 
 <!-- RFC7942 -->
 
@@ -421,7 +436,7 @@ available in the CDDL tool described in {{Section F of RFC8610}} since version 0
 The validator warns about each feature being used and provides the set
 of target values used with the feature.
 The other control operators defined in this specification are also
-implemented as of version 0.8.21.
+implemented as of version 0.8.21 and 0.8.26 (double-handed `.det`).
 
 Andrew Weiss' {{CDDL-RS}} has an ongoing implementation of this draft
 which is feature-complete except for the ABNF and dedenting support (<https://github.com/anweiss/cddl/pull/79>).
@@ -440,6 +455,9 @@ Acknowledgements
 Jim Schaad suggested several improvements.
 The `.feature` feature was developed out of a discussion with Henk Birkholz.
 Paul Kyzivat helped isolate the need for `.det`.
+
+.det is an abbreviation for "dedenting cat", but Det is also the name
+of a German TV Cartoon character created in the 1960s.
 
 <!--  LocalWords:  dedenting dedented
  -->
