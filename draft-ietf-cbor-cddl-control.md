@@ -192,10 +192,10 @@ arguments (target and controller) are independently *dedented* before
 the concatenation takes place.
 For the purposes of this specification, we define dedenting as:
 
-1. determining the smallest amount of left-most white space (number of
+1. determining the smallest amount of left-most blank space (number of
    leading space characters) in all the non-blank lines, and
 2. removing exactly that number of leading space characters from each
-   line.  For blank (white space only or empty) lines, there may be
+   line.  For blank (blank space only or empty) lines, there may be
    less (or no) leading space characters than this amount, in which
    case all leading space is removed.
 
@@ -310,8 +310,8 @@ rfc5234-core = '
 Features
 ========
 
-Traditionally, the kind of validation enabled by languages such as
-CDDL provided a Boolean result: valid, or invalid.
+Commonly, the kind of validation enabled by languages such as
+CDDL provides a Boolean result: valid, or invalid.
 
 In rapidly evolving environments, this is too simplistic.  The data
 models described by a CDDL specification may continually be enhanced
