@@ -84,7 +84,7 @@ Computed Literals
 =================
 
 CDDL as defined in {{-cddl}} does not have any mechanisms to compute
-literals.  As an 80 % solution, this specification adds three control
+literals.  To cover a large part of the use cases, this specification adds three control
 operators: `.plus` for numeric addition, `.cat` for string
 concatenation, and `.det` for string concatenation with dedenting of
 both sides (target and controller).
