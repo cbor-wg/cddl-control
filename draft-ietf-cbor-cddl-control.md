@@ -69,7 +69,7 @@ not yet ready at the time RFC 8610 was completed:
 | .det     | String Concatenation, pre-dedenting       |
 | .abnf    | ABNF in CDDL (text strings)               |
 | .abnfb   | ABNF in CDDL (byte strings)               |
-| .feature | Detecting feature use in extension points |
+| .feature | Indicate name of feature used (extension point) |
 {: #tbl-new title="New control operators in this document"}
 
 Terminology
