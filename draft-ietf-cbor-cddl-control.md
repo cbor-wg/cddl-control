@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-09-16
+date: 2021-09-17
 
 stand_alone: true
 
@@ -57,7 +57,8 @@ Introduction        {#intro}
 ============
 
 The Concise Data Definition Language (CDDL), standardized in {{-cddl}},
-provides "control operators" as its main language extension point.
+provides "control operators" as its main language extension point
+({{Section 3.8 of -cddl}}).
 
 The present document defines a number of control operators that were
 not yet ready at the time RFC 8610 was completed:
