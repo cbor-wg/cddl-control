@@ -80,6 +80,7 @@ Terminology
 This specification uses terminology from {{-cddl}}.
 In particular, with respect to control operators, "target" refers to
 the left hand side operand, and "controller" to the right hand side operand.
+"Tool" refers to tools along the lines of that described in {{Appendix F of -cddl}}.
 
 Computed Literals
 =================
