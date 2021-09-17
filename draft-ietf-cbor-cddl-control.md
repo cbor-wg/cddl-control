@@ -193,6 +193,20 @@ cbor-tags-oid = '
 The control operator `.det` works like `.cat`, except that both
 arguments (target and controller) are independently *dedented* before
 the concatenation takes place.
+
+For the first rule in {{exa-det}}, the result is
+equivalent to {{exa-det-result}}.
+
+~~~~ cddl
+oid = bytes .abnfb 'oid
+oid = 1*arc
+roid = *arc
+arc = [nlsb] %x00-7f
+nlsb = %x81-ff *%x80-ff
+'
+~~~~
+{: #exa-det-result title="Dedenting example: result of first .det"}
+
 For the purposes of this specification, we define dedenting as:
 
 1. determining the smallest amount of left-most blank space (number of
