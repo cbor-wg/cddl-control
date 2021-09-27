@@ -3,13 +3,14 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-09-17
+date: 2021-09-27
 
 stand_alone: true
 
 ipr: trust200902
 keyword: Internet-Draft
-cat: info
+cat: std
+consensus: true
 
 pi: [toc, sortrefs, symrefs, compact, comments]
 
