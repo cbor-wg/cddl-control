@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-09-16
+date: 2021-09-17
 
 stand_alone: true
 
@@ -57,7 +57,8 @@ Introduction        {#intro}
 ============
 
 The Concise Data Definition Language (CDDL), standardized in {{-cddl}},
-provides "control operators" as its main language extension point.
+provides "control operators" as its main language extension point
+({{Section 3.8 of -cddl}}).
 
 The present document defines a number of control operators that were
 not yet ready at the time RFC 8610 was completed:
@@ -68,7 +69,7 @@ not yet ready at the time RFC 8610 was completed:
 | .det     | String Concatenation, pre-dedenting       |
 | .abnf    | ABNF in CDDL (text strings)               |
 | .abnfb   | ABNF in CDDL (byte strings)               |
-| .feature | Detecting feature use in extension points |
+| .feature | Indicate name of feature used (extension point) |
 {: #tbl-new title="New control operators in this document"}
 
 Terminology
@@ -79,6 +80,7 @@ Terminology
 This specification uses terminology from {{-cddl}}.
 In particular, with respect to control operators, "target" refers to
 the left hand side operand, and "controller" to the right hand side operand.
+"Tool" refers to tools along the lines of that described in {{Appendix F of -cddl}}.
 
 Computed Literals
 =================
@@ -191,6 +193,20 @@ cbor-tags-oid = '
 The control operator `.det` works like `.cat`, except that both
 arguments (target and controller) are independently *dedented* before
 the concatenation takes place.
+
+For the first rule in {{exa-det}}, the result is
+equivalent to {{exa-det-result}}.
+
+~~~~ cddl
+oid = bytes .abnfb 'oid
+oid = 1*arc
+roid = *arc
+arc = [nlsb] %x00-7f
+nlsb = %x81-ff *%x80-ff
+'
+~~~~
+{: #exa-det-result title="Dedenting example: result of first .det"}
+
 For the purposes of this specification, we define dedenting as:
 
 1. determining the smallest amount of left-most blank space (number of
