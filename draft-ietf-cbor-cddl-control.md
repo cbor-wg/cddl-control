@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-07-31
+date: 2021-09-16
 
 stand_alone: true
 
@@ -44,8 +44,9 @@ informative:
 The Concise Data Definition Language (CDDL), standardized in RFC 8610,
 provides "control operators" as its main language extension point.
 
-The present document defines a number of control operators that did
-not make it into RFC 8610: `.plus`, `.cat` and `.det` for the construction of constants,
+The present document defines a number of control operators that were
+not yet ready at the time RFC 8610 was completed:
+`.plus`, `.cat` and `.det` for the construction of constants,
 `.abnf`/`.abnfb` for including ABNF (RFC 5234/RFC 7405) in CDDL specifications, and
 `.feature` for indicating the use of a non-basic feature in an instance.
 
@@ -58,8 +59,8 @@ Introduction        {#intro}
 The Concise Data Definition Language (CDDL), standardized in {{-cddl}},
 provides "control operators" as its main language extension point.
 
-The present document defines a number of control operators that did
-not make it into RFC 8610:
+The present document defines a number of control operators that were
+not yet ready at the time RFC 8610 was completed:
 
 | Name     | Purpose                                   |
 | .plus    | Numeric addition                          |
@@ -83,7 +84,7 @@ Computed Literals
 =================
 
 CDDL as defined in {{-cddl}} does not have any mechanisms to compute
-literals.  As an 80 % solution, this specification adds three control
+literals.  To cover a large part of the use cases, this specification adds three control
 operators: `.plus` for numeric addition, `.cat` for string
 concatenation, and `.det` for string concatenation with dedenting of
 both sides (target and controller).
