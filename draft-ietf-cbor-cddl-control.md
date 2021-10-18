@@ -80,7 +80,7 @@ Terminology
 
 This specification uses terminology from {{-cddl}}.
 In particular, with respect to control operators, "target" refers to
-the left hand side operand, and "controller" to the right hand side operand.
+the left-hand side operand, and "controller" to the right-hand side operand.
 "Tool" refers to tools along the lines of that described in {{Appendix F of -cddl}}.
 
 Computed Literals
@@ -345,8 +345,8 @@ the instance as using a feature that is annotated by the
 specification.
 
 More specifically, the tool's diagnostic output might contain
-the controller (right hand side) as a feature name, and the target
-(left hand side) as a feature detail.  However, in some cases, the target has
+the controller (right-hand side) as a feature name, and the target
+(left-hand side) as a feature detail.  However, in some cases, the target has
 too much detail, and the specification might want to hint the tool
 that more limited detail is appropriate.  In this case, the controller
 should be an array, with the first element being the feature name
@@ -379,8 +379,8 @@ Leaving out the entire extension point would mean that instances that
 make use of an extension would be marked as whole-sale invalid, making
 the entire validation approach much less useful.
 Leaving the extension point in, but not marking its use as special,
-would render mistakes such as using the label `organisation` instead of
-`organization` invisible.
+would render mistakes such as using the label "`organisation`" instead of
+"`organization`" invisible.
 
 ~~~ cddl
 person = {
