@@ -82,6 +82,9 @@ This specification uses terminology from {{-cddl}}.
 In particular, with respect to control operators, "target" refers to
 the left-hand side operand, and "controller" to the right-hand side operand.
 "Tool" refers to tools along the lines of that described in {{Appendix F of -cddl}}.
+Note also that the data model underlying CDDL provides for text
+strings as well as byte strings as two separate types, which are
+then collectively referred to as "strings".
 
 Computed Literals
 =================
