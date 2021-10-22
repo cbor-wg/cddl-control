@@ -224,7 +224,7 @@ nlsb = %x81-ff *%x80-ff
 For the purposes of this specification, we define dedenting as:
 
 1. determining the smallest amount of left-most blank space (number of
-   leading space characters) in all the non-blank lines, and
+   leading space characters) present in all the non-blank lines, and
 2. removing exactly that number of leading space characters from each
    line.  For blank (blank space only or empty) lines, there may be
    less (or no) leading space characters than this amount, in which
