@@ -121,7 +121,7 @@ If the target is a floating point number and the controller an integer
 number, or vice versa, the sum is converted into the type of the
 target; converting from a floating point number to an integer selects
 its floor (the largest integer less than or equal to the floating
-point number, i.e., rounding down).
+point number, i.e., rounding towards negative infinity).
 
 ~~~~ cddl
 interval<BASE> = (
