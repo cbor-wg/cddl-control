@@ -33,6 +33,7 @@ normative:
   RFC5234: abnf
   RFC7405: abnf2
 informative:
+  RFC8428: senml
   CDDL-RS:
     title: cddl-rs
     author:
@@ -86,6 +87,11 @@ Note also that the data model underlying CDDL provides for text
 strings as well as byte strings as two separate types, which are
 then collectively referred to as "strings".
 
+The term ABNF in this specification stands for the combination of
+{{RFC5234}} and {{RFC7405}}, i.e., the ABNF control operators defined by
+this document allow use of the case-sensitive extensions defined in
+{{RFC7405}}.
+
 Computed Literals
 =================
 
@@ -115,7 +121,7 @@ If the target is a floating point number and the controller an integer
 number, or vice versa, the sum is converted into the type of the
 target; converting from a floating point number to an integer selects
 its floor (the largest integer less than or equal to the floating
-point number).
+point number, i.e., rounding towards negative infinity).
 
 ~~~~ cddl
 interval<BASE> = (
@@ -133,11 +139,15 @@ rect = {
 ~~~~
 {: #exa-plus title="Example: addition to a base value"}
 
-The example in {{exa-plus}} contains the generic definition of a group
-`interval` that gives a lower and an upper bound and optionally a
-tolerance.
-`rect` combines two of these groups into a map, one group for the X
-dimension and one for Y dimension.
+The example in {{exa-plus}} contains the generic definition of a CDDL
+group `interval` that gives a lower and an upper bound and optionally
+a tolerance.
+The parameter BASE allows the non-conflicting use of multiple of these
+interval groups in one map, by assigning different labels to the
+entries of the interval.
+`rect` combines two of these interval groups into a map, one group for
+the X dimension (using 0, 1, and 2 as labels) and one for Y dimension
+(using 3, 4, and 5 as labels).
 
 
 String Concatenation
@@ -413,7 +423,8 @@ validation.
 One could also imagine a tool that takes arguments allowing the tool to accept
 certain features and reject others (enable/disable).  The latter approach
 could for instance be used for a JSON/CBOR switch, as illustrated in
-{{exa-feat-variants}}.
+{{exa-feat-variants}}, using SenML {{-senml}} as the example data model
+used with both JSON and CBOR.
 
 ~~~ cddl
 SenML-Record = {
@@ -466,6 +477,15 @@ Security considerations
 =======================
 
 The security considerations of {{-cddl}} apply.
+
+While both {{RFC5234}} and {{RFC7405}} state that security is truly
+believed to be irrelevant to the respective document, the use of
+formal description techniques cannot only simplify, but sometimes also
+complicate a specification.
+This can lead to security problems in implementations and in the
+specification itself.
+As with CDDL itself, ABNF should be judiciously applied, and overly
+complex (or "cute") constructions should be avoided.
 
 --- back
 
