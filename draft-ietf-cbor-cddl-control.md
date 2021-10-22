@@ -3,7 +3,7 @@ title: >
   Additional Control Operators for CDDL
 abbrev: CDDL control operators
 docname: draft-ietf-cbor-cddl-control-latest
-date: 2021-09-27
+date: 2021-10-22
 
 stand_alone: true
 
