@@ -9,21 +9,6 @@
   
 <!-- xml2rfc v2v3 conversion 3.9.1 -->
 
-<!-- [rfced] Please note that the title of the document has been updated as
-follows. An abbreviation has been expanded per Section 3.6 of RFC 7322 ("RFC
-Style Guide"). Please review.
-
-Original:
-   Additional Control Operators for CDDL
- 
-Current:
-   Additional Control Operators for Concise Data Definition Language (CDDL)
--->
-
-<!-- [rfced] Please review the "Inclusive Language" portion of the online 
-Style Guide <https://www.rfc-editor.org/styleguide/part2/#inclusive_language>
-and let us know if any changes are needed. -->
-
   <front>
     <title abbrev="CDDL Control Operators">Additional Control Operators for Concise Data Definition Language (CDDL)</title>
     <seriesInfo name="RFC" value="9165"/>
@@ -42,10 +27,14 @@ and let us know if any changes are needed. -->
     </author>
     <date year="2021" month="December"/>
 
-<!-- [rfced] Please insert any keywords (beyond those that appear in the
-title) for use on https://www.rfc-editor.org/search. -->
-
-<keyword>example</keyword>
+    <keyword>binary format</keyword>
+    <keyword>data interchange format</keyword>
+    <keyword>description language</keyword>
+    <keyword>schema language</keyword>
+    <keyword>tree grammar</keyword>
+    <keyword>ABNF</keyword>
+    <keyword>Augmented BNF</keyword>
+    <keyword>feature indication</keyword>
 
     <abstract>
       <t>The Concise Data Definition Language (CDDL), standardized in RFC 8610,
@@ -181,16 +170,7 @@ component literals defined in different places in the specification.</t>
         <t>The <tt>.cat</tt> control identifies a string that is built from a
 concatenation of the target and the controller.
 The target and controller <bcp14>MUST</bcp14> be strings.
-<!-- [rfced] Please clarify; does this mean it has the same type 
-as the target?
-                                                                                                   
-Original:                                                                                          
-   The result of the operation has the type of the target.                                         
-                                                                                                   
-Perhaps:                                                                                           
-   The result of the operation has the same type as the target.                                    
---> 
-The result of the operation has the type of the target.
+The result of the operation has the same type as the target.                                    
 The concatenation is performed on the bytes in both strings.
 If the target is a text string, the result of that concatenation <bcp14>MUST</bcp14>
 be valid UTF-8.</t>
@@ -287,23 +267,10 @@ strings interpreted as Unicode scalar sequences.  This means this
 specification defines two control operators: <tt>.abnfb</tt> for ABNF
 denoting byte sequences and <tt>.abnf</tt> for denoting sequences of
 Unicode scalar values (code point) represented as UTF-8 text strings.
-<!-- [rfced] What does "that" refer to?
-
-Original:
-   ... the ABNF is applied to sequence of bytes in 
-   the string interpreting that as a sequence of bytes (.abnfb) or as 
-   a sequence of code points represented as an UTF-8 text string (.abnf).
-
-Perhaps (if "the sequence of bytes"):
-   ... the ABNF is applied to the sequence of bytes in 
-   the string and interprets it as a sequence of bytes (.abnfb) or as 
-   a sequence of code points represented as an UTF-8 text string (.abnf).
--->
-
 
 Both control operators can be applied to targets of either string
 type; the ABNF is applied to the sequence of bytes in the string
-interpreting that as a sequence of bytes (<tt>.abnfb</tt>) or as a sequence
+and interprets it as a sequence of bytes (<tt>.abnfb</tt>) or as a sequence
 of code points represented as an UTF-8 text string (<tt>.abnf</tt>).
 	The controller string <bcp14>MUST</bcp14> be a text string.</li>
         <li>ABNF defines a list of rules, not a single expression (called
@@ -316,13 +283,6 @@ of valid ABNF by an "element" that selects from that ABNF and a newline.</li>
 CDDL text strings is tedious (and leads to essentially unreadable
 ABNF).  The workaround employs the <tt>.cat</tt> operator introduced in
 <xref target="string-concatenation" format="default"/> and the syntax for text in byte strings.
-<!-- [rfced] FYI: We have changed "NOT" to "not" with emphasis tags. 
-Please let us know if you prefer otherwise.
-
-Original: 
-   ... of ABNF itself (NOT the syntax expressed in ABNF!) is ...
--->
-
 As is customary for ABNF, the syntax of ABNF itself (<em>not</em> the syntax
 expressed in ABNF!) is relaxed to allow a single line feed as a
 newline:</li>
@@ -342,21 +302,9 @@ operator and/or by <tt>.det</tt> if there is indentation to be disposed of.</li>
       <t>These points are combined into an example in <xref target="exa-abnf" format="default"/>, which uses
 ABNF from <xref target="RFC3339" format="default"/> to specify one of each of the Concise Binary Object Representation (CBOR) tags defined in
       <xref target="RFC8943" format="default"/> and <xref target="RFC8949" format="default"/>.</t>
-      <!-- [rfced] Please review whether the "type" attribute should be set for
-sourcecode elements in the XML file. If the current list of preferred
-values for "type" (https://www.rfc-editor.org/materials/sourcecode-types.txt) 
-does not contain an applicable type, then feel free to suggest a new one.
-Also, it is acceptable to leave the "type" attribute not set.  -->
-
       <figure anchor="exa-abnf">
         <name>An Example of Employing ABNF from RFC 3339 for Defining CBOR Tags</name>
-
-<!--[rfced] Regarding Figure 5, is it ABNF?  It does not parse using Bill's 
-ABNF parser (https://tools.ietf.org/tools/bap/), which gives errors for "#"
-and "." and "'" as illegal characters. Please let us know if any changes are 
-needed.
--->
-<sourcecode type=""><![CDATA[
+<sourcecode type="cddl"><![CDATA[
 ; for RFC 8943
 Tag1004 = #6.1004(text .abnf full-date)
 ; for RFC 8949
@@ -403,22 +351,7 @@ CDDL provides a Boolean result: valid or invalid.</t>
 models described by a CDDL specification may continually be enhanced
 by additional features, and it would be useful even for a
 specification that does not yet describe a specific future feature to
-<!-- [rfced] It is not clear how "accepting such extensions" is connected to
-the rest of the sentence. Please let us know how to clarify this.
-
-Original:
-   ...and it would be useful even for a specification that does not yet
-   describe a specific future feature to identify the extension point the
-   feature can use, accepting such extensions while marking them as such.
-
-Perhaps:
-   ...and it would be useful even for a specification that does not yet
-   describe a specific future feature to identify the extension point the
-   feature can use and accept such extensions while marking them as such.
--->
-
-
-identify the extension point the feature can use, accepting such
+identify the extension point the feature can use and accept such
 extensions while marking them as such.</t>
       <t>The <tt>.feature</tt> control annotates the target as making use of the
 feature named by the controller.  The latter will usually be a string.
@@ -510,12 +443,6 @@ mutually exclusive use of features, as would be needed in this example.</t>
     </section>
     <section anchor="iana-considerations" numbered="true" toc="default">
       <name>IANA Considerations</name>
-<!--[rfced] FYI, the xref with a relative attribute (to create the link 
-to https://www.iana.org/assignments/cddl#cddl-control-operators") was 
-intentionally removed. Although we understand its purpose, IANA has asked 
-that the hash-link URLs to IANA registries not be used in RFCs.
--->
-
 <t>IANA has registered the contents of
 <xref target="tbl-iana-reqs" format="default"/> into the "CDDL Control Operators" registry of <xref target="IANA.cddl" format="default"/>:</t>
       <table anchor="tbl-iana-reqs" align="center">
@@ -620,14 +547,6 @@ The <tt>.feature</tt> feature was developed out of a discussion with <contact fu
 <contact fullname="Paul Kyzivat"/> helped isolate the need for <tt>.det</tt>.</t>
       <t>.det is an abbreviation for "dedenting cat", but Det is also the name
 of a German TV cartoon character created in the 1960s.</t>
-      <!--  LocalWords:  dedenting dedented
- -->
-
 </section>
   </back>
-<!-- [rfced] Some author comments are present in the XML. Please confirm that
-no updates related to these comments are outstanding. Note that the
-comments will be deleted prior to publication.
--->
-
 </rfc>
